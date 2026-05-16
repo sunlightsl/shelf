@@ -1,0 +1,34 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.evaluationDependsOn(':app')
+
+    // 为未声明 namespace 的老插件自动补上（兼容 AGP 8.x）
+    plugins.withId("com.android.library") {
+        if (project.android.namespace == null) {
+            def manifestFile = project.file("src/main/AndroidManifest.xml")
+            if (manifestFile.exists()) {
+                def manifest = new groovy.xml.XmlParser().parse(manifestFile)
+                def packageName = manifest.attribute("package")
+                if (packageName) {
+                    project.android.namespace = packageName
+                }
+            }
+            if (project.android.namespace == null) {
+                project.android.namespace = "com.example.${project.name}"
+            }
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

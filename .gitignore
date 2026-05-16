@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Claude / AI assistant files
+.claude/
+
+# Internal documentation (not for public repo)
+docs/
